@@ -3,6 +3,9 @@ import { renderBlock } from './lib.js'
 export function renderUserBlock (name: string, avatar: string, favoriteItemsAmount: number) {
   const items: number | string = Boolean(favoriteItemsAmount) ? favoriteItemsAmount : 'ничего нет';
 
+  localStorage.setItem('nameUser', name);
+  localStorage.setItem('avatarUser', avatar);
+  localStorage.setItem('count', `${favoriteItemsAmount}`);
   renderBlock(
     'user-block',
     `

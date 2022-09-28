@@ -1,5 +1,14 @@
 import { renderBlock } from './lib.js'
 
+interface SearchFormData {
+  checkIn: number | string;
+  checkOut: number | string;
+  maxPrice: number | string;
+}
+export function search ({checkIn, checkOut, maxPrice}: SearchFormData) {
+  console.log(`${checkIn}, ${checkOut}, ${maxPrice}`);
+}
+
 export function renderSearchFormBlock () {
   const dateObj: Date = new Date();
   const datePlus2 = new Date(dateObj.getDate() + 2 * 86400000);
@@ -35,18 +44,25 @@ export function renderSearchFormBlock () {
           </div>
           <div>
             <label for="check-out-date">Дата выезда</label>
-            <input id="check-out-date" type="date" value="${curDate}" min="${minDate}" max="${maxOutDate}" name="checkout" />
+            <input id="check-out-date" type="date" value="${curDate}" min="${minOutDate}" max="${maxOutDate}" name="checkout" />
           </div>
           <div>
             <label for="max-price">Макс. цена суток</label>
             <input id="max-price" type="text" value="" name="price" class="max-price" />
           </div>
           <div>
-            <div><button>Найти</button></div>
+            <div><button id='search'>Найти</button></div>
           </div>
         </div>
       </fieldset>
     </form>
     `
   )
+  const buttonSearch = document.getElementById('search');
+  if (buttonSearch != null) {
+    const checkIn = document.getElementById('check-in-date').getAttribute('value');
+    const checkOut = document.getElementById('check-in-date').getAttribute('value');
+    const maxPrice = document.getElementById('max-price').getAttribute('value');
+    buttonSearch.onclick = () => search({checkIn: checkIn,checkOut: checkOut, maxPrice: maxPrice});
+  }
 }
