@@ -1,11 +1,12 @@
 import { renderBlock } from './lib.js'
+import {APIlocal} from "./api-local";
 
 export function renderUserBlock (name: string, avatar: string, favoriteItemsAmount: number) {
   const items: number | string = Boolean(favoriteItemsAmount) ? favoriteItemsAmount : 'ничего нет';
 
-  localStorage.setItem('nameUser', name);
-  localStorage.setItem('avatarUser', avatar);
-  localStorage.setItem('count', `${favoriteItemsAmount}`);
+  APIlocal.set('nameUser', name);
+  APIlocal.set('avatarUser', avatar);
+  APIlocal.set('count', `${favoriteItemsAmount}`);
   renderBlock(
     'user-block',
     `

@@ -1,11 +1,7 @@
 import { renderBlock } from './lib.js'
+import {ISearchFormData} from "./interfaces";
 
-interface SearchFormData {
-  checkIn: number | string;
-  checkOut: number | string;
-  maxPrice: number | string;
-}
-export function search ({checkIn, checkOut, maxPrice}: SearchFormData) {
+export function search ({checkIn, checkOut, maxPrice}: ISearchFormData) {
   console.log(`${checkIn}, ${checkOut}, ${maxPrice}`);
 }
 
