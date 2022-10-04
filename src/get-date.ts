@@ -1,5 +1,6 @@
-import {APIlocal} from "./api-local";
-import {IUser} from "./interfaces";
+import {APIlocal} from "./api-local.js";
+import {IUser} from "./interfaces.js";
+import {renderUserBlock} from "./user.js";
 
 export function getUserData (): IUser | null {
   const avatar: string = APIlocal.get('avatarUser');
@@ -16,5 +17,5 @@ export function getUserData (): IUser | null {
 }
 export function getFavoritesAmount () {
   const count: number | string = APIlocal.get('count');
-  console.log(`Count ${count}`);
+  renderUserBlock('Maria', "https://flomaster.club/uploads/posts/2021-11/1637950591_1-flomaster-club-p-risunki-solnishka-s-luchikami-dlya-detei-d-1.jpg", +count);
 }

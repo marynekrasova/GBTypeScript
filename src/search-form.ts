@@ -1,8 +1,32 @@
 import { renderBlock } from './lib.js'
-import {ISearchFormData} from "./interfaces";
+import {ISearchFormData} from "./interfaces.js";
+import {renderSearchResultsBlock, toggleFavoriteItem} from "./search-results.js";
 
+function dateToUnixStamp(date) {
+  return date.getTime() / 1000;
+}
+
+function responseToJson(requestPromise) {
+  return requestPromise
+    .then((response) => {
+      return response.text()
+    })
+    .then((response) => {
+      return JSON.parse(response)
+    })
+}
 export function search ({checkIn, checkOut, maxPrice}: ISearchFormData) {
-  console.log(`${checkIn}, ${checkOut}, ${maxPrice}`);
+  renderSearchResultsBlock ();
+  // let url = `http://localhost:3030/places?` +
+  //   `checkIn=${dateToUnixStamp(checkIn)}&` +
+  //   `checkOut=${dateToUnixStamp(checkOut)}&` +
+  //   `coordinates=59.9386,30.3141`
+  //
+  // if (maxPrice != null) {
+  //   url += `&maxPrice=${maxPrice}`
+  // }
+
+  // return responseToJson(fetch(url))
 }
 
 export function renderSearchFormBlock () {
@@ -46,19 +70,20 @@ export function renderSearchFormBlock () {
             <label for="max-price">Макс. цена суток</label>
             <input id="max-price" type="text" value="" name="price" class="max-price" />
           </div>
-          <div>
-            <div><button id='search'>Найти</button></div>
+            <div>
+            <div><div class="button-search" id='searchAp'>Найти</div></div>
           </div>
         </div>
       </fieldset>
     </form>
     `
   )
-  const buttonSearch = document.getElementById('search');
-  if (buttonSearch != null) {
-    const checkIn = document.getElementById('check-in-date').getAttribute('value');
-    const checkOut = document.getElementById('check-in-date').getAttribute('value');
-    const maxPrice = document.getElementById('max-price').getAttribute('value');
-    buttonSearch.onclick = () => search({checkIn: checkIn,checkOut: checkOut, maxPrice: maxPrice});
-  }
+  const buttonSearchAp = document.getElementById('searchAp');
+  buttonSearchAp.addEventListener('click',
+    () => {
+      const checkIn = document.getElementById('check-in-date').getAttribute('value');
+      const checkOut = document.getElementById('check-in-date').getAttribute('value');
+      const maxPrice = document.getElementById('max-price').getAttribute('value');
+      search({checkIn: checkIn,checkOut: checkOut, maxPrice: maxPrice})
+    });
 }

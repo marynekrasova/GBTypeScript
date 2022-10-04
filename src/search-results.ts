@@ -1,4 +1,6 @@
 import { renderBlock } from './lib.js'
+import {getFavoritesAmount} from "./get-date.js";
+import {APIlocal} from "./api-local.js";
 
 export function renderSearchStubBlock () {
   renderBlock(
@@ -12,7 +14,7 @@ export function renderSearchStubBlock () {
   )
 }
 
-export function renderEmptyOrErrorSearchBlock (reasonMessage) {
+export function renderEmptyOrErrorSearchBlock (reasonMessage: string) {
   renderBlock(
     'search-results-block',
     `
@@ -22,6 +24,24 @@ export function renderEmptyOrErrorSearchBlock (reasonMessage) {
     </div>
     `
   )
+}
+const getFavoriteList = () => {
+  return localStorage.getItem('favoriteItems').split(',');
+}
+export function toggleFavoriteItem (id: string) {
+  const favoritesItem = getFavoriteList();
+  const findItem = favoritesItem.find(itemId => itemId === id);
+  if (findItem) {
+    const newFavoritesItem = favoritesItem.filter(itemId => itemId !== id)
+    localStorage.setItem('favoriteItems', newFavoritesItem.join())
+  }
+  else {
+    favoritesItem.push(id);
+    localStorage.setItem('favoriteItems', favoritesItem.join())
+  }
+  const getFavoritesItemCount = localStorage.getItem('favoriteItems').split(',').length - 1;
+  APIlocal.set('count', `${getFavoritesItemCount}`);
+  getFavoritesAmount();
 }
 
 export function renderSearchResultsBlock () {
@@ -40,10 +60,10 @@ export function renderSearchResultsBlock () {
         </div>
     </div>
     <ul class="results-list">
-      <li class="result">
+      <li class="result" id="1">
         <div class="result-container">
           <div class="result-img-container">
-            <div class="favorites active"></div>
+            <div class="favorites js-favoriteToggle1"></div>
             <img class="result-img" src="./img/result-1.png" alt="">
           </div>	
           <div class="result-info">
@@ -61,10 +81,10 @@ export function renderSearchResultsBlock () {
           </div>
         </div>
       </li>
-      <li class="result">
+      <li class="result" id="2">
         <div class="result-container">
           <div class="result-img-container">
-            <div class="favorites"></div>
+            <div class="favorites js-favoriteToggle2"></div>
             <img class="result-img" src="./img/result-2.png" alt="">
           </div>	
           <div class="result-info">
@@ -85,4 +105,17 @@ export function renderSearchResultsBlock () {
     </ul>
     `
   )
+  const favoriteButton1 = document.querySelector('.js-favoriteToggle1');
+  const favoriteButton2 = document.querySelector('.js-favoriteToggle2');
+
+  favoriteButton1.addEventListener('click',
+    () => {
+    favoriteButton1.classList.toggle('active');
+    toggleFavoriteItem('1');
+  });
+  favoriteButton2.addEventListener('click',
+    () => {
+      favoriteButton2.classList.toggle('active');
+      toggleFavoriteItem('2');
+    });
 }
