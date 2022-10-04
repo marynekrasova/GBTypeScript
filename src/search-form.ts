@@ -1,6 +1,7 @@
 import { renderBlock } from './lib.js'
 import {ISearchFormData} from "./interfaces.js";
 import {renderSearchResultsBlock, toggleFavoriteItem} from "./search-results.js";
+import {place} from "./date.js";
 
 function dateToUnixStamp(date) {
   return date.getTime() / 1000;
@@ -16,7 +17,7 @@ function responseToJson(requestPromise) {
     })
 }
 export function search ({checkIn, checkOut, maxPrice}: ISearchFormData) {
-  renderSearchResultsBlock ();
+  renderSearchResultsBlock (place);
   // let url = `http://localhost:3030/places?` +
   //   `checkIn=${dateToUnixStamp(checkIn)}&` +
   //   `checkOut=${dateToUnixStamp(checkOut)}&` +
@@ -25,7 +26,6 @@ export function search ({checkIn, checkOut, maxPrice}: ISearchFormData) {
   // if (maxPrice != null) {
   //   url += `&maxPrice=${maxPrice}`
   // }
-
   // return responseToJson(fetch(url))
 }
 
@@ -78,12 +78,24 @@ export function renderSearchFormBlock () {
     </form>
     `
   )
+  const checkIn = document.getElementById('check-in-date');
+  const checkOut = document.getElementById('check-in-date');
+  const maxPrice = document.getElementById('max-price');
+  let checkInValue: string = '';
+  let checkOutValue: string = '';
+  let maxPriceValue: string = '';
+  checkIn.addEventListener('change', (event) => {
+     checkInValue = event.target.value;
+  });
+  checkOut.addEventListener('change', (event) => {
+    checkOutValue = event.target.value;
+  });
+  maxPrice.addEventListener('change', (event) => {
+    maxPriceValue = event.target.value;
+  });
   const buttonSearchAp = document.getElementById('searchAp');
   buttonSearchAp.addEventListener('click',
     () => {
-      const checkIn = document.getElementById('check-in-date').getAttribute('value');
-      const checkOut = document.getElementById('check-in-date').getAttribute('value');
-      const maxPrice = document.getElementById('max-price').getAttribute('value');
-      search({checkIn: checkIn,checkOut: checkOut, maxPrice: maxPrice})
+    search({checkIn: checkInValue,checkOut: checkOutValue, maxPrice: maxPriceValue})
     });
 }
