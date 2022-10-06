@@ -1,12 +1,11 @@
 import { renderBlock } from './lib.js'
-import {APIlocal} from "./api-local";
+import {APIlocal} from "./api-local.js";
 
-export function renderUserBlock (name: string, avatar: string, favoriteItemsAmount: number) {
+export function renderUserBlock (name: string, avatar: string, favoriteItemsAmount?: number) {
   const items: number | string = Boolean(favoriteItemsAmount) ? favoriteItemsAmount : 'ничего нет';
 
   APIlocal.set('nameUser', name);
   APIlocal.set('avatarUser', avatar);
-  APIlocal.set('count', `${favoriteItemsAmount}`);
   renderBlock(
     'user-block',
     `
