@@ -1,8 +1,32 @@
 import { renderBlock } from './lib.js'
-import {ISearchFormData} from "./interfaces";
+import {ISearchFormData} from "./interfaces.js";
+import {renderSearchResultsBlock, toggleFavoriteItem} from "./search-results.js";
+import {place} from "./date.js";
 
+function dateToUnixStamp(date) {
+  return date.getTime() / 1000;
+}
+
+function responseToJson(requestPromise) {
+  return requestPromise
+    .then((response) => {
+      return response.text()
+    })
+    .then((response) => {
+      return JSON.parse(response)
+    })
+}
 export function search ({checkIn, checkOut, maxPrice}: ISearchFormData) {
-  console.log(`${checkIn}, ${checkOut}, ${maxPrice}`);
+  renderSearchResultsBlock (place);
+  // let url = `http://localhost:3030/places?` +
+  //   `checkIn=${dateToUnixStamp(checkIn)}&` +
+  //   `checkOut=${dateToUnixStamp(checkOut)}&` +
+  //   `coordinates=59.9386,30.3141`
+  //
+  // if (maxPrice != null) {
+  //   url += `&maxPrice=${maxPrice}`
+  // }
+  // return responseToJson(fetch(url))
 }
 
 export function renderSearchFormBlock () {
@@ -46,19 +70,32 @@ export function renderSearchFormBlock () {
             <label for="max-price">Макс. цена суток</label>
             <input id="max-price" type="text" value="" name="price" class="max-price" />
           </div>
-          <div>
-            <div><button id='search'>Найти</button></div>
+            <div>
+            <div><div class="button-search" id='searchAp'>Найти</div></div>
           </div>
         </div>
       </fieldset>
     </form>
     `
   )
-  const buttonSearch = document.getElementById('search');
-  if (buttonSearch != null) {
-    const checkIn = document.getElementById('check-in-date').getAttribute('value');
-    const checkOut = document.getElementById('check-in-date').getAttribute('value');
-    const maxPrice = document.getElementById('max-price').getAttribute('value');
-    buttonSearch.onclick = () => search({checkIn: checkIn,checkOut: checkOut, maxPrice: maxPrice});
-  }
+  const checkIn = document.getElementById('check-in-date');
+  const checkOut = document.getElementById('check-in-date');
+  const maxPrice = document.getElementById('max-price');
+  let checkInValue: string = '';
+  let checkOutValue: string = '';
+  let maxPriceValue: string = '';
+  checkIn.addEventListener('change', (event) => {
+     checkInValue = event.target.value;
+  });
+  checkOut.addEventListener('change', (event) => {
+    checkOutValue = event.target.value;
+  });
+  maxPrice.addEventListener('change', (event) => {
+    maxPriceValue = event.target.value;
+  });
+  const buttonSearchAp = document.getElementById('searchAp');
+  buttonSearchAp.addEventListener('click',
+    () => {
+    search({checkIn: checkInValue,checkOut: checkOutValue, maxPrice: maxPriceValue})
+    });
 }

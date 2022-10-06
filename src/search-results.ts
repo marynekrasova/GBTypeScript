@@ -1,4 +1,7 @@
 import { renderBlock } from './lib.js'
+import {getFavoritesAmount} from "./get-date.js";
+import {APIlocal} from "./api-local.js";
+import {IPlace} from "./interfaces.js";
 
 export function renderSearchStubBlock () {
   renderBlock(
@@ -12,7 +15,7 @@ export function renderSearchStubBlock () {
   )
 }
 
-export function renderEmptyOrErrorSearchBlock (reasonMessage) {
+export function renderEmptyOrErrorSearchBlock (reasonMessage: string) {
   renderBlock(
     'search-results-block',
     `
@@ -23,8 +26,55 @@ export function renderEmptyOrErrorSearchBlock (reasonMessage) {
     `
   )
 }
+export function booking(id: string): void {
+console.log(id);
+}
+const getFavoriteList = () => {
+  return APIlocal.get('favoriteItems').split(',');
+}
+export function toggleFavoriteItem (id: string) {
+  const favoritesItem = getFavoriteList();
+  const findItem = favoritesItem.find(itemId => itemId === id);
+  if (findItem) {
+    const newFavoritesItem = favoritesItem.filter(itemId => itemId !== id)
+    APIlocal.set('favoriteItems', newFavoritesItem.join())
+  }
+  else {
+    favoritesItem.push(id);
+    APIlocal.set('favoriteItems', favoritesItem.join())
+  }
+  const getFavoritesItemCount = localStorage.getItem('favoriteItems').split(',').length - 1;
+  APIlocal.set('count', `${getFavoritesItemCount}`);
+  getFavoritesAmount();
+}
 
-export function renderSearchResultsBlock () {
+export function renderSearchResultsBlock (places: Array<IPlace>) {
+  let itemContent = ''
+  places.forEach(item => {
+    itemContent += `
+      <li class="result">
+        <div class="result-container">
+          <div class="result-img-container">
+            <div class="favorites js-favoriteToggle1" id=${item.id}></div>
+            <img class="result-img" src=${item.image} alt="">
+          </div>
+          <div class="result-info">
+            <div class="result-info--header">
+              <p>${item.name}</p>
+              <p class="price">${item.price}&#8381;</p>
+            </div>
+            <div class="result-info--map"><i class="map-icon"></i> ${item.remoteness}км от вас</div>
+            <div class="result-info--descr">${item.description}</div>
+            <div class="result-info--footer">
+              <div>
+                <button id="${item.id}b" class="book">Забронировать</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+    `
+  });
   renderBlock(
     'search-results-block',
     `
@@ -39,50 +89,23 @@ export function renderSearchResultsBlock () {
             </select>
         </div>
     </div>
-    <ul class="results-list">
-      <li class="result">
-        <div class="result-container">
-          <div class="result-img-container">
-            <div class="favorites active"></div>
-            <img class="result-img" src="./img/result-1.png" alt="">
-          </div>	
-          <div class="result-info">
-            <div class="result-info--header">
-              <p>YARD Residence Apart-hotel</p>
-              <p class="price">13000&#8381;</p>
-            </div>
-            <div class="result-info--map"><i class="map-icon"></i> 2.5км от вас</div>
-            <div class="result-info--descr">Комфортный апарт-отель в самом сердце Санкт-Петербрга. К услугам гостей номера с видом на город и бесплатный Wi-Fi.</div>
-            <div class="result-info--footer">
-              <div>
-                <button>Забронировать</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </li>
-      <li class="result">
-        <div class="result-container">
-          <div class="result-img-container">
-            <div class="favorites"></div>
-            <img class="result-img" src="./img/result-2.png" alt="">
-          </div>	
-          <div class="result-info">
-            <div class="result-info--header">
-              <p>Akyan St.Petersburg</p>
-              <p class="price">13000&#8381;</p>
-            </div>
-            <div class="result-info--map"><i class="map-icon"></i> 1.1км от вас</div>
-            <div class="result-info--descr">Отель Akyan St-Petersburg с бесплатным Wi-Fi на всей территории расположен в историческом здании Санкт-Петербурга.</div>
-            <div class="result-info--footer">
-              <div>
-                <button>Забронировать</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </li>
-    </ul>
-    `
-  )
+    <ul class="results-list">${itemContent}</ul>
+`)
+
+  const favoriteButton = document.querySelectorAll('.js-favoriteToggle1');
+  for (let i = 0; i < favoriteButton.length; i++) {
+    favoriteButton[i].addEventListener('click',
+      () => {
+        favoriteButton[i].classList.toggle('active');
+        toggleFavoriteItem(favoriteButton[i].id);
+      });
+  }
+
+  const book = document.querySelectorAll('.book');
+  for (let i = 0; i < book.length; i++) {
+    book[i].addEventListener('click',
+      () => {
+        booking(book[i].id);
+      });
+  }
 }
