@@ -1,7 +1,7 @@
 import { renderBlock } from './lib.js'
 import {getFavoritesAmount} from "./get-date.js";
 import {APIlocal} from "./api-local.js";
-import {IPlace} from "./interfaces";
+import {IPlace} from "./interfaces.js";
 
 export function renderSearchStubBlock () {
   renderBlock(
@@ -26,19 +26,22 @@ export function renderEmptyOrErrorSearchBlock (reasonMessage: string) {
     `
   )
 }
+export function booking(id: string): void {
+console.log(id);
+}
 const getFavoriteList = () => {
-  return localStorage.getItem('favoriteItems').split(',');
+  return APIlocal.get('favoriteItems').split(',');
 }
 export function toggleFavoriteItem (id: string) {
   const favoritesItem = getFavoriteList();
   const findItem = favoritesItem.find(itemId => itemId === id);
   if (findItem) {
     const newFavoritesItem = favoritesItem.filter(itemId => itemId !== id)
-    localStorage.setItem('favoriteItems', newFavoritesItem.join())
+    APIlocal.set('favoriteItems', newFavoritesItem.join())
   }
   else {
     favoritesItem.push(id);
-    localStorage.setItem('favoriteItems', favoritesItem.join())
+    APIlocal.set('favoriteItems', favoritesItem.join())
   }
   const getFavoritesItemCount = localStorage.getItem('favoriteItems').split(',').length - 1;
   APIlocal.set('count', `${getFavoritesItemCount}`);
@@ -49,10 +52,10 @@ export function renderSearchResultsBlock (places: Array<IPlace>) {
   let itemContent = ''
   places.forEach(item => {
     itemContent += `
-      <li class="result" id=${item.id}>
+      <li class="result">
         <div class="result-container">
           <div class="result-img-container">
-            <div class="favorites js-favoriteToggle1"></div>
+            <div class="favorites js-favoriteToggle1" id=${item.id}></div>
             <img class="result-img" src=${item.image} alt="">
           </div>
           <div class="result-info">
@@ -64,7 +67,7 @@ export function renderSearchResultsBlock (places: Array<IPlace>) {
             <div class="result-info--descr">${item.description}</div>
             <div class="result-info--footer">
               <div>
-                <button>Забронировать</button>
+                <button id="${item.id}b" class="book">Забронировать</button>
               </div>
             </div>
           </div>
@@ -89,17 +92,20 @@ export function renderSearchResultsBlock (places: Array<IPlace>) {
     <ul class="results-list">${itemContent}</ul>
 `)
 
-  const favoriteButton1 = document.querySelector('.js-favoriteToggle1');
-  const favoriteButton2 = document.querySelector('.js-favoriteToggle2');
+  const favoriteButton = document.querySelectorAll('.js-favoriteToggle1');
+  for (let i = 0; i < favoriteButton.length; i++) {
+    favoriteButton[i].addEventListener('click',
+      () => {
+        favoriteButton[i].classList.toggle('active');
+        toggleFavoriteItem(favoriteButton[i].id);
+      });
+  }
 
-  favoriteButton1.addEventListener('click',
-    () => {
-    favoriteButton1.classList.toggle('active');
-    toggleFavoriteItem('1');
-  });
-  favoriteButton2.addEventListener('click',
-    () => {
-      favoriteButton2.classList.toggle('active');
-      toggleFavoriteItem('2');
-    });
+  const book = document.querySelectorAll('.book');
+  for (let i = 0; i < book.length; i++) {
+    book[i].addEventListener('click',
+      () => {
+        booking(book[i].id);
+      });
+  }
 }
